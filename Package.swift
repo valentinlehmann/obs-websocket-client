@@ -7,7 +7,7 @@ let package = Package(
     name: "obs-websocket-client",
     platforms: [
         .macOS(.v13),
-        .iOS(.v26)
+        .iOS(.v16)
     ],
     products: [
         .library(name: "OBSWebsocket", targets: ["OBSWebsocket"]),

@@ -40,7 +40,7 @@ public actor OBSClient {
     public struct ConnectionInfo: Codable, Equatable, Sendable  {
         /// Server hostname or address; "localhost" if nil.
         public var host: String?
-
+        
         /// Server port; 4455 if nil.
         public var port: Int?
         
@@ -60,7 +60,7 @@ public actor OBSClient {
             return url
         }
     }
-
+    
     var connectionSetup: ConnectionInfo
     
     /// Update connection information to use during ``connect()``.
@@ -110,9 +110,9 @@ public actor OBSClient {
     public func connect() async throws {
         // FIXME: create delegate to handle authentication errors; manage our own logging
         urlSession = URLSession(configuration: .default)
-
+        
         let wsURL = try connectionSetup.wsURL()
-
+        
         webSocketTask = urlSession!.webSocketTask(with: wsURL)
         webSocketTask!.resume()
         
@@ -133,6 +133,14 @@ public actor OBSClient {
                 .store(in: &subscriptions)
         }
         
+    }
+    
+    /// Disconnect a running websocket connection and cleanup URLSession
+    public func disconnect() async throws {
+        guard isConnected.value else {return}
+        guard let webSocketTask else {return}
+        webSocketTask.cancel()
+        connectionClosed()
     }
     
     func resubscribe(to subscriptions: EventSubscription) {
